@@ -73,11 +73,11 @@ ci: lint test/race test/cover
 
 ## build: バイナリをビルド
 build:
-	$(GO) build -o bin/api ./cmd/api
+	$(GO) build -o bin/server ./cmd
 
 ## run: サーバーを起動
 run:
-	$(GO) run ./cmd/api
+	$(GO) run ./cmd
 
 # ==============================
 # クリーンアップ
