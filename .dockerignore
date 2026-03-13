@@ -1,0 +1,23 @@
+# Git
+.git
+.gitignore
+
+# CI/CD
+.github
+.octocov.yml
+
+# テスト・カバレッジ
+**/*_test.go
+coverage.out
+coverage.html
+
+# ビルド成果物
+bin/
+
+# ドキュメント
+*.md
+
+# ローカル環境設定
+.env
+.env.*
+docker-compose*.yml
