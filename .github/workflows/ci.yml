@@ -59,7 +59,7 @@ jobs:
             # ---- ビルド確認 ----
 
             - name: ビルド
-              run: go build ./cmd/api
+              run: go build ./cmd
 
     # ---- セキュリティスキャン（別ジョブ）----
 
