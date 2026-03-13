@@ -59,7 +59,7 @@ jobs:
             # ---- ビルド確認 ----
 
             - name: ビルド
-              run: go build ./cmd
+              run: go build -o bin/server ./cmd
 
     # ---- セキュリティスキャン（別ジョブ）----
 
