@@ -9,6 +9,11 @@ PACKAGES := ./...
 COVER_OUT := coverage.out
 COVER_HTML := coverage.html
 
+IMAGE_NAME     := g1
+IMAGE_TAG      := latest
+CONTAINER_NAME := g1
+PORT           := 8080
+
 # ==============================
 # テスト
 # ==============================
@@ -80,12 +85,39 @@ run:
 	$(GO) run ./cmd
 
 # ==============================
+# Docker
+# ==============================
+ 
+## docker/build: Dockerイメージをビルド
+docker/build:
+	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+ 
+## docker/run: コンテナを起動（ポート8080）
+docker/run:
+	docker run --rm -d \
+		--name $(CONTAINER_NAME) \
+		-p $(PORT):8080 \
+		$(IMAGE_NAME):$(IMAGE_TAG)
+	@echo "🚀 起動: http://localhost:$(PORT)"
+ 
+## docker/stop: コンテナを停止
+docker/stop:
+	docker stop $(CONTAINER_NAME)
+ 
+## docker/clean: イメージ・コンテナを削除
+docker/clean:
+	-docker stop $(CONTAINER_NAME) 2>/dev/null
+	-docker rm $(CONTAINER_NAME) 2>/dev/null
+	-docker rmi $(IMAGE_NAME):$(IMAGE_TAG) 2>/dev/null
+	@echo "🧹 Docker リソース削除完了"
+
+# ==============================
 # クリーンアップ
 # ==============================
 
 ## clean: 生成ファイルを削除
 clean:
-	rm -f $(COVER_OUT) $(COVER_HTML) bin/api
+	rm -f $(COVER_OUT) $(COVER_HTML) bin/server
 	@echo "🧹 クリーンアップ完了"
 
 # ==============================
