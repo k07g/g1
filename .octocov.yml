@@ -1,0 +1,46 @@
+# .octocov.yml
+# octocov - コードメトリクス計測ツールの設定
+# https://github.com/k1LoW/octocov
+
+# ---- カバレッジ ----
+coverage:
+    # go test -coverprofile で生成されるファイルを指定
+    paths:
+        - coverage.out
+    # カバレッジの最低ライン（下回るとCIが失敗）
+    acceptable: current >= 70%
+
+# ---- コード対テスト比率 ----
+codeToTestRatio:
+    code:
+        - "**/*.go"
+        - "!**/*_test.go"
+        - "!**/mock_*.go"
+    test:
+        - "**/*_test.go"
+
+# ---- テスト実行時間 ----
+testExecutionTime:
+    if: true
+
+# ---- 差分レポート（前回との比較）----
+# mainブランチの計測結果をArtifactに保存し、PRで差分表示
+diff:
+    datastores:
+        - artifact://${GITHUB_REPOSITORY}
+
+# ---- PRコメント ----
+comment:
+    if: is_pull_request
+    hideFooterLink: false
+    deletePrevious: true # 古いコメントを削除して最新だけ残す
+
+# ---- レポート保存（デフォルトブランチのみ）----
+report:
+    if: is_default_branch
+    datastores:
+        - artifact://${GITHUB_REPOSITORY}
+
+# ---- Job Summary（GitHub Actions サマリーに表示）----
+summary:
+    if: true
