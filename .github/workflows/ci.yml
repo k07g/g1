@@ -7,13 +7,14 @@ on:
     branches: [main, develop]
 
 jobs:
+  # ---- ユニットテスト + カバレッジ ----
   test:
-    name: Lint・Test・Coverage
+    name: Lint・Unit Test・Coverage
     runs-on: ubuntu-latest
     permissions:
-      contents: read       # Artifactに保存した前回レポートの取得
-      pull-requests: write # PRへのコメント投稿
-      actions: write       # Artifactへのレポート保存・削除
+      contents: read
+      pull-requests: write
+      actions: write
 
     steps:
       - name: リポジトリをチェックアウト
@@ -39,10 +40,13 @@ jobs:
       - name: go vet
         run: go vet ./...
 
-      # ---- テスト ----
+      # ---- ユニットテスト ----
 
-      - name: テスト（race + coverage）
-        run: go test ./... -v -race -count=1 -timeout 60s -coverprofile=coverage.out -covermode=atomic
+      - name: ユニットテスト（race + coverage）
+        run: |
+          UNIT_PKGS=$(go list ./... | grep -v '/e2e')
+          go test $UNIT_PKGS -v -race -count=1 -timeout 60s \
+            -coverprofile=coverage.out -covermode=atomic
 
       - name: カバレッジをコンソール表示
         run: go tool cover -func=coverage.out
@@ -63,8 +67,26 @@ jobs:
       - name: ビルド
         run: go build -o bin/server ./cmd
 
-  # ---- セキュリティスキャン（別ジョブ）----
+  # ---- E2Eテスト ----
+  e2e:
+    name: E2E Test
+    runs-on: ubuntu-latest
+    needs: test
 
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Go のセットアップ
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: E2Eテスト
+        run: go test ./e2e/... -v -count=1 -timeout 60s
+
+  # ---- セキュリティスキャン ----
   security:
     name: セキュリティスキャン
     runs-on: ubuntu-latest
