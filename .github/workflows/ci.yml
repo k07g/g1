@@ -73,6 +73,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: g1
+          POSTGRES_PASSWORD: g1pass
+          POSTGRES_DB: g1db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U g1 -d g1db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
@@ -84,6 +99,8 @@ jobs:
           cache: true
 
       - name: E2Eテスト
+        env:
+          DATABASE_URL: postgres://g1:g1pass@localhost:5432/g1db?sslmode=disable
         run: go test ./e2e/... -v -count=1 -timeout 60s
 
   # ---- セキュリティスキャン ----

@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	domain "github.com/k07g/g1/internal/domain/item"
 	"github.com/k07g/g1/internal/infrastructure/repository"
 	"github.com/k07g/g1/internal/interface/handler"
 	usecase "github.com/k07g/g1/internal/usecase/item"
@@ -20,18 +19,15 @@ func main() {
 	//       ↓                    ↓
 	//  domain.Repository   usecase.UseCase  （インターフェース経由）
 
-	var repo domain.Repository
-	if dsn := os.Getenv("DATABASE_URL"); dsn != "" {
-		var err error
-		repo, err = repository.NewPostgreSQLRepository(dsn)
-		if err != nil {
-			log.Fatalf("PostgreSQL接続エラー: %v", err)
-		}
-		log.Println("🐘 PostgreSQLリポジトリを使用")
-	} else {
-		repo = repository.NewInMemoryRepository()
-		log.Println("💾 インメモリリポジトリを使用")
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Fatal("DATABASE_URL が設定されていません")
 	}
+	repo, err := repository.NewPostgreSQLRepository(dsn)
+	if err != nil {
+		log.Fatalf("PostgreSQL接続エラー: %v", err)
+	}
+	log.Println("🐘 PostgreSQLリポジトリを使用")
 	uc := usecase.NewInteractor(repo)
 	itemHandler := handler.NewItemHandler(uc)
 
