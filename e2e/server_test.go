@@ -23,6 +23,12 @@ func newTestServer(t *testing.T) *httptest.Server {
 		t.Fatal("DATABASE_URL が設定されていません")
 	}
 
+	// NewPostgreSQLRepository が CREATE TABLE IF NOT EXISTS を実行するので先に呼ぶ
+	repo, err := repository.NewPostgreSQLRepository(dsn)
+	if err != nil {
+		t.Fatalf("connect to postgres: %v", err)
+	}
+
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		t.Fatalf("open db: %v", err)
@@ -36,11 +42,6 @@ func newTestServer(t *testing.T) *httptest.Server {
 		t.Fatalf("seed items: %v", err)
 	}
 	db.Close()
-
-	repo, err := repository.NewPostgreSQLRepository(dsn)
-	if err != nil {
-		t.Fatalf("connect to postgres: %v", err)
-	}
 
 	uc := usecase.NewInteractor(repo)
 	h := handler.NewItemHandler(uc)
