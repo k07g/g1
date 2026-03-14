@@ -9,7 +9,8 @@ import (
 
 	"github.com/k07g/g1/internal/infrastructure/repository"
 	"github.com/k07g/g1/internal/interface/handler"
-	usecase "github.com/k07g/g1/internal/usecase/item"
+	itemUsecase "github.com/k07g/g1/internal/usecase/item"
+	userUsecase "github.com/k07g/g1/internal/usecase/user"
 	_ "github.com/lib/pq"
 )
 
@@ -23,34 +24,38 @@ func newTestServer(t *testing.T) *httptest.Server {
 		t.Fatal("DATABASE_URL が設定されていません")
 	}
 
-	// NewPostgreSQLRepository が CREATE TABLE IF NOT EXISTS を実行するので先に呼ぶ
-	repo, err := repository.NewPostgreSQLRepository(dsn)
+	// CREATE TABLE IF NOT EXISTS を実行するので先にリポジトリを初期化する
+	itemRepo, err := repository.NewPostgreSQLRepository(dsn)
 	if err != nil {
-		t.Fatalf("connect to postgres: %v", err)
+		t.Fatalf("connect to postgres(items): %v", err)
+	}
+	userRepo, err := repository.NewPostgreSQLUserRepository(dsn)
+	if err != nil {
+		t.Fatalf("connect to postgres(users): %v", err)
 	}
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		t.Fatalf("open db: %v", err)
 	}
-	if _, err := db.Exec(`TRUNCATE TABLE items RESTART IDENTITY`); err != nil {
+	if _, err := db.Exec(`TRUNCATE TABLE items, users RESTART IDENTITY`); err != nil {
 		db.Close()
-		t.Fatalf("truncate items: %v", err)
+		t.Fatalf("truncate tables: %v", err)
 	}
-	if err := seedPostgres(t, db); err != nil {
+	if err := seedItems(t, db); err != nil {
 		db.Close()
 		t.Fatalf("seed items: %v", err)
 	}
 	db.Close()
 
-	uc := usecase.NewInteractor(repo)
-	h := handler.NewItemHandler(uc)
+	itemHandler := handler.NewItemHandler(itemUsecase.NewInteractor(itemRepo))
+	userHandler := handler.NewUserHandler(userUsecase.NewInteractor(userRepo))
 
-	mux := newServeMux(h)
+	mux := newServeMux(itemHandler, userHandler)
 	return httptest.NewServer(mux)
 }
 
-var seedItems = []struct {
+var itemSeeds = []struct {
 	name  string
 	price int
 }{
@@ -59,10 +64,10 @@ var seedItems = []struct {
 	{"Docker実践ガイド", 3800},
 }
 
-func seedPostgres(t *testing.T, db *sql.DB) error {
+func seedItems(t *testing.T, db *sql.DB) error {
 	t.Helper()
 	now := time.Now()
-	for _, s := range seedItems {
+	for _, s := range itemSeeds {
 		if _, err := db.Exec(
 			`INSERT INTO items (name, price, created_at, updated_at) VALUES ($1, $2, $3, $4)`,
 			s.name, s.price, now, now,
