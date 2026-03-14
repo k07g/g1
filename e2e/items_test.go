@@ -12,7 +12,7 @@ import (
 // ==============================
 
 func TestE2E_Health(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodGet, srv.URL+"/health", nil)
@@ -24,7 +24,7 @@ func TestE2E_Health(t *testing.T) {
 // ==============================
 
 func TestE2E_List(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodGet, srv.URL+"/api/items", nil)
@@ -45,7 +45,7 @@ func TestE2E_List(t *testing.T) {
 // ==============================
 
 func TestE2E_Create(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	body := map[string]interface{}{"name": "新しい本", "price": 2500}
@@ -71,7 +71,7 @@ func TestE2E_Create(t *testing.T) {
 }
 
 func TestE2E_Create_ValidationErrors(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	tests := []struct {
@@ -101,7 +101,7 @@ func TestE2E_Create_ValidationErrors(t *testing.T) {
 // ==============================
 
 func TestE2E_Get(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	// まず作成
@@ -120,7 +120,7 @@ func TestE2E_Get(t *testing.T) {
 }
 
 func TestE2E_Get_NotFound(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodGet, srv.URL+"/api/items/9999", nil)
@@ -129,7 +129,7 @@ func TestE2E_Get_NotFound(t *testing.T) {
 }
 
 func TestE2E_Get_InvalidID(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodGet, srv.URL+"/api/items/abc", nil)
@@ -142,7 +142,7 @@ func TestE2E_Get_InvalidID(t *testing.T) {
 // ==============================
 
 func TestE2E_Update(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	// 作成
@@ -171,7 +171,7 @@ func TestE2E_Update(t *testing.T) {
 }
 
 func TestE2E_Update_PartialFields(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	created := decodeItem(t, decodeResponse(t,
@@ -197,7 +197,7 @@ func TestE2E_Update_PartialFields(t *testing.T) {
 }
 
 func TestE2E_Update_NotFound(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodPut, srv.URL+"/api/items/9999",
@@ -212,7 +212,7 @@ func TestE2E_Update_NotFound(t *testing.T) {
 // ==============================
 
 func TestE2E_Delete(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	// 作成
@@ -232,7 +232,7 @@ func TestE2E_Delete(t *testing.T) {
 }
 
 func TestE2E_Delete_NotFound(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodDelete, srv.URL+"/api/items/9999", nil)
@@ -245,7 +245,7 @@ func TestE2E_Delete_NotFound(t *testing.T) {
 // ==============================
 
 func TestE2E_Scenario_CreateAndDelete(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	// 1. 作成
@@ -293,7 +293,7 @@ func TestE2E_Scenario_CreateAndDelete(t *testing.T) {
 // ==============================
 
 func TestE2E_MethodNotAllowed(t *testing.T) {
-	srv := newTestServer()
+	srv := newTestServer(t)
 	defer srv.Close()
 
 	resp := do(t, http.MethodPatch, srv.URL+"/api/items", map[string]interface{}{"name": "x"})

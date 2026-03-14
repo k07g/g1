@@ -29,9 +29,11 @@ test:
 test/unit:
 	$(GO) test $(UNIT_PKGS) -v -count=1 -timeout 30s
 
-## test/e2e: E2Eテストを実行
+DATABASE_URL ?= postgres://g1:g1pass@localhost:5432/g1db?sslmode=disable
+
+## test/e2e: E2Eテストを実行（要: PostgreSQL）
 test/e2e:
-	$(GO) test $(E2E_PKGS) -v -count=1 -timeout 60s
+	DATABASE_URL=$(DATABASE_URL) $(GO) test $(E2E_PKGS) -v -count=1 -timeout 60s
 
 ## test/all: ユニット + E2E テストをすべて実行
 test/all:
