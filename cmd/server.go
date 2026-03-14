@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
+	domain "github.com/k07g/g1/internal/domain/item"
 	"github.com/k07g/g1/internal/infrastructure/repository"
 	"github.com/k07g/g1/internal/interface/handler"
 	usecase "github.com/k07g/g1/internal/usecase/item"
-	domain "github.com/k07g/g1/internal/domain/item"
 )
 
 func main() {

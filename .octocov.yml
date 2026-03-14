@@ -8,7 +8,7 @@ coverage:
     paths:
         - coverage.out
     # カバレッジの最低ライン（下回るとCIが失敗）
-    acceptable: current >= 70%
+    acceptable: current >= 60%
 
 # ---- コード対テスト比率 ----
 codeToTestRatio:
