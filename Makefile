@@ -42,8 +42,8 @@ test/e2e:
 	DATABASE_URL=$(DATABASE_URL) $(GO) test $(E2E_PKGS) -v -count=1 -timeout 60s
 
 ## test/all: ユニット + E2E テストをすべて実行
-test/all:
-	$(GO) test $(ALL_PKGS) -v -count=1 -timeout 60s
+test/all: test/unit test/e2e
+	
 
 ## test/race: レースコンディション検出つきでテストを実行
 test/race:
