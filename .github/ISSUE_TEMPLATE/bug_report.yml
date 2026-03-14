@@ -1,0 +1,65 @@
+name: バグ報告
+description: 不具合・予期しない動作を報告する
+labels: [bug]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグ報告ありがとうございます。以下の項目をできるだけ詳しく記入してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 概要
+      description: 何が起きているかを簡潔に説明してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順を記載してください。
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作
+      description: 本来どのように動作するべきかを記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      description: 実際にどのような動作が起きているかを記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境
+      description: 問題が発生した環境を記載してください。
+      placeholder: |
+        - OS: macOS 14 / Ubuntu 22.04
+        - Go: 1.26.1
+        - Docker: 27.x
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 補足情報
+      description: ログ・スクリーンショットなど、追加情報があれば記載してください。
+    validations:
+      required: false
