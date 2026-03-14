@@ -31,8 +31,14 @@ test/unit:
 
 DATABASE_URL ?= postgres://g1:g1pass@localhost:5432/g1db?sslmode=disable
 
-## test/e2e: E2Eテストを実行（要: PostgreSQL）
+## test/e2e: E2Eテストを実行（dbコンテナが未起動なら自動起動）
 test/e2e:
+	@if ! docker compose ps db --status running 2>/dev/null | grep -q db; then \
+		echo "▶ dbコンテナを起動します..."; \
+		docker compose up -d db; \
+		echo "⏳ PostgreSQL の起動を待機中..."; \
+		docker compose exec db sh -c 'until pg_isready -U g1 -d g1db; do sleep 1; done'; \
+	fi
 	DATABASE_URL=$(DATABASE_URL) $(GO) test $(E2E_PKGS) -v -count=1 -timeout 60s
 
 ## test/all: ユニット + E2E テストをすべて実行
