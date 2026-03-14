@@ -24,6 +24,33 @@ type itemResponse struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
+// userResponse は単一ユーザーのレスポンス
+type userResponse struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+// decodeUser は response.Data を userResponse にデコードする
+func decodeUser(t *testing.T, r response) userResponse {
+	t.Helper()
+	var u userResponse
+	if err := json.Unmarshal(r.Data, &u); err != nil {
+		t.Fatalf("decode user: %v", err)
+	}
+	return u
+}
+
+// decodeUsers は response.Data を []userResponse にデコードする
+func decodeUsers(t *testing.T, r response) []userResponse {
+	t.Helper()
+	var users []userResponse
+	if err := json.Unmarshal(r.Data, &users); err != nil {
+		t.Fatalf("decode users: %v", err)
+	}
+	return users
+}
+
 // do はHTTPリクエストを送信してレスポンスを返す
 func do(t *testing.T, method, url string, body interface{}) *http.Response {
 	t.Helper()
